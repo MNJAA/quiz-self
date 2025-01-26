@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import FileUpload from './components/FileUpload';
 
 // Temporary components
 const Welcome = () => (
@@ -9,14 +10,13 @@ const Welcome = () => (
   </div>
 );
 
-// APITestButton component
 const APITestButton = () => {
   const [response, setResponse] = useState('');
 
   const testOpenAI = async () => {
     try {
       const res = await fetch('/api/test-openai', {
-        method: 'POST',
+        method: 'POST'
       });
       const data = await res.json();
       setResponse(data.question || data.error);
@@ -35,19 +35,17 @@ const APITestButton = () => {
   );
 };
 
-// MainMenu component
 const MainMenu = () => (
   <div className="main-menu">
     <h2>Main Menu</h2>
     <div className="menu-options">
       <button className="menu-btn">Ready-Made Quizzes</button>
-      <button className="menu-btn">Upload File (PDF/DOCX/XLSX/Images)</button>
+      <FileUpload />
       <APITestButton />
     </div>
   </div>
 );
 
-// App component
 function App() {
   return (
     <Router>
