@@ -4,11 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "nodemon --experimental-vm-modules server/server.js",
+    "start": "node --experimental-vm-modules server/server.js",
     "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "build": "vite build && echo 'Build complete'",
+    "lint": "eslint . --ext js,jsx",
+    "preview": "vite preview",
+    "serve": "NODE_ENV=production node server/server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

@@ -11,8 +11,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from React frontend
-app.use(express.static(path.join(__dirname, '../dist')));
+// Serve static assets with proper headers
+app.use('/assets', express.static(path.join(__dirname, '../dist/assets'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.set('Content-Type', 'application/javascript');
+    }
+    if (path.endsWith('.css')) {
+      res.set('Content-Type', 'text/css');
+    }
+  }
+}));
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -31,10 +40,9 @@ app.post('/api/test-openai', async (req, res) => {
   }
 });
 
-// Catch-all route to serve React app
+// Serve HTML for all other routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
-// Export for Vercel
 export default app;
