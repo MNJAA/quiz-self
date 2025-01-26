@@ -18,7 +18,7 @@ app.post('/api/test-openai', async (req, res) => {
   try {
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: "Create one simple math question" }],
-      model: "gpt-3.5-turbo-0125",
+      model: "gpt-3.5-turbo",
     });
 
     res.json({ 
@@ -28,6 +28,14 @@ app.post('/api/test-openai', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Serve static files for the frontend
+app.use(express.static('dist'));
+
+// Catch-all route for frontend routing
+app.get('*', (req, res) => {
+  res.sendFile('dist/index.html', { root: '.' });
 });
 
 // Export the app for Vercel

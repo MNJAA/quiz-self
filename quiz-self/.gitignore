@@ -17,8 +17,6 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .env
-node_modules
-dist
 assets
 .DS_Store
 *.suo
