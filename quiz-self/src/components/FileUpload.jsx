@@ -50,11 +50,9 @@ const FileUpload = () => {
       // Add console.log here to debug progress
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
+          console.log(`Total: ${event.total}, Loaded: ${event.loaded}`); // Debug log
           const percentComplete = (event.loaded / event.total) * 100;
-          console.log(`Progress: ${percentComplete}%`); // Debug log
-          setUploadProgress(percentComplete); // Update progress
-        } else {
-          console.log('Progress event fired, but length is not computable.'); // Debug log
+          setUploadProgress(percentComplete);
         }
       });
 
