@@ -4,6 +4,8 @@ import { useDropzone } from 'react-dropzone';
 const FileUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0); // New state for progress
+  const [uploadedFile, setUploadedFile] = useState(null); // New state for uploaded file
 
   const { getRootProps, getInputProps, acceptedFiles } = useDropzone({
     accept: {
@@ -21,6 +23,8 @@ const FileUpload = () => {
 
     setUploading(true);
     setUploadError('');
+    setUploadProgress(0); // Reset progress
+    setUploadedFile(null); // Reset uploaded file
 
     try {
       // Get signed URL from backend
@@ -40,18 +44,32 @@ const FileUpload = () => {
 
       const { url, token } = await res.json();
       
-      // Upload file to Supabase
-      const uploadRes = await fetch(url, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': file.type
+      // Upload file to Supabase with progress tracking
+      const xhr = new XMLHttpRequest();
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          const percentComplete = (event.loaded / event.total) * 100;
+          setUploadProgress(percentComplete); // Update progress
         }
       });
 
-      if (!uploadRes.ok) throw new Error('Upload failed');
-      alert('File uploaded successfully!');
+      xhr.open('PUT', url, true);
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      xhr.setRequestHeader('Content-Type', file.type);
+      xhr.send(file);
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          setUploadedFile(file.name); // Set uploaded file name
+          alert('File uploaded successfully!');
+        } else {
+          throw new Error('Upload failed');
+        }
+      };
+
+      xhr.onerror = () => {
+        throw new Error('Upload failed');
+      };
     } catch (err) {
       console.error('Upload error:', err);
       setUploadError(err.message);
@@ -77,6 +95,21 @@ const FileUpload = () => {
           >
             {uploading ? 'Uploading...' : 'Upload File'}
           </button>
+
+          {/* Progress Bar */}
+          {uploading && (
+            <div className="progress-bar">
+              <div 
+                className="progress" 
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+          )}
+
+          {/* Success Message */}
+          {uploadedFile && (
+            <p className="success">Uploaded: {uploadedFile}</p>
+          )}
         </div>
       )}
       
