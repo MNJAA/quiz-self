@@ -27,33 +27,20 @@ app.post('/api/generate-upload-url', async (req, res) => {
   try {
     console.log('Generating upload URL for:', fileName);
     
-    // Ensure the bucket exists
-    const { data: bucketData, error: bucketError } = await supabase.storage
-      .getBucket('quiz-files');
-
-    if (bucketError) {
-      console.error('Bucket error:', bucketError);
-      throw bucketError;
-    }
-
-    // Generate signed URL
+    // Generate signed URL directly (bucket must exist)
     const { data, error } = await supabase.storage
       .from('quiz-files')
       .createSignedUploadUrl(`${Date.now()}_${fileName}`);
 
-    if (error) {
-      console.error('Supabase error:', error);
-      throw error;
-    }
+    if (error) throw error;
 
-    console.log('Signed URL generated:', data.signedUrl);
     res.json({
       url: data.signedUrl,
       token: data.token
     });
   } catch (err) {
-    console.error('Error generating upload URL:', err);
-    res.status(500).json({ error: err.message });
+    console.error('Error:', err);
+    res.status(500).json({ error: 'File upload failed. Ensure bucket exists.' });
   }
 });
 
