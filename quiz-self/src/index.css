@@ -185,34 +185,24 @@ body {
   font-weight: bold;
 }
 
-/* File Upload Progress Bar */
 /* Progress Bar Styles */
+.progress-container {
+  width: 100%;
+  margin-top: 1rem;
+}
+
 .progress-bar {
   width: 100%;
   height: 8px;
-  background: #000000;
+  background: black; /* Black background */
   border-radius: 4px;
-  margin-top: 1rem;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .progress {
   height: 100%;
-  background: #2563eb;
-  transition: width 0.3s;
-}
-
-/* Success Message Styles */
-.success {
-  color: #16a34a;
-  margin-top: 1rem;
-  font-weight: bold;
-}
-
-
-.progress-container {
-  width: 100%;
-  margin-top: 1rem;
+  background: #16a34a; /* Green fill */
+  transition: width 0.1s linear; /* Smooth transition */
 }
 
 .progress-text {
@@ -220,4 +210,15 @@ body {
   text-align: center;
   font-size: 0.875rem;
   color: #4b5563;
+}
+
+/* Success and Error Messages */
+.success {
+  color: #16a34a;
+  margin-top: 1rem;
+}
+
+.error {
+  color: #dc2626;
+  margin-top: 1rem;
 }
