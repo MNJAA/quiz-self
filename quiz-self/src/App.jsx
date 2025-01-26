@@ -9,20 +9,17 @@ const Welcome = () => (
   </div>
 );
 
-const APITestButton = () => {
-  const [response, setResponse] = useState('');
-
-  const testOpenAI = async () => {
-    try {
-      const res = await fetch('http://localhost:3001/api/test-openai', {
-        method: 'POST'
-      });
-      const data = await res.json();
-      setResponse(data.question || data.error);
-    } catch (err) {
-      setResponse('Connection failed');
-    }
-  };
+const testOpenAI = async () => {
+  try {
+    const res = await fetch('/api/test-openai', {
+      method: 'POST'
+    });
+    const data = await res.json();
+    setResponse(data.question || data.error);
+  } catch (err) {
+    setResponse('Connection failed');
+  }
+};
 
   return (
     <div className="api-test">

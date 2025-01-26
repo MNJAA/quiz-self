@@ -1,8 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import OpenAI from 'openai';
-import dotenv from 'dotenv';
-dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -29,7 +27,5 @@ app.post('/api/test-openai', async (req, res) => {
   }
 });
 
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Export the app for Vercel
+export default app;
