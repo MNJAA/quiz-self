@@ -20,7 +20,7 @@ const FileUpload = () => {
     if (!file) return;
 
     setUploading(true);
-    setUploadError(''); // Clear previous errors
+    setUploadError('');
 
     try {
       // Get signed URL from backend
@@ -33,25 +33,19 @@ const FileUpload = () => {
         })
       });
 
-      // Check if response is JSON
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Server returned invalid response');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to generate upload URL');
       }
 
-      const data = await res.json();
-      
-      // Check for backend errors
-      if (!data.url || !data.token) {
-        throw new Error(data.error || 'Failed to generate upload URL');
-      }
-      
+      const { url, token } = await res.json();
+
       // Upload file to Supabase
-      const uploadRes = await fetch(data.url, {
+      const uploadRes = await fetch(url, {
         method: 'PUT',
         body: file,
         headers: {
-          Authorization: `Bearer ${data.token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': file.type
         }
       });
@@ -59,6 +53,7 @@ const FileUpload = () => {
       if (!uploadRes.ok) throw new Error('Upload failed');
       alert('File uploaded successfully!');
     } catch (err) {
+      console.error('Upload error:', err);
       setUploadError(err.message);
     } finally {
       setUploading(false);
@@ -71,12 +66,12 @@ const FileUpload = () => {
         <input {...getInputProps()} />
         <p>Drag & drop file here, or click to select</p>
       </div>
-      
+
       {acceptedFiles[0] && (
         <div className="file-preview">
           <p>Selected file: {acceptedFiles[0].name}</p>
-          <button 
-            onClick={handleUpload} 
+          <button
+            onClick={handleUpload}
             disabled={uploading}
             className="upload-button"
           >
@@ -84,7 +79,7 @@ const FileUpload = () => {
           </button>
         </div>
       )}
-      
+
       {uploadError && <p className="error">{uploadError}</p>}
     </div>
   );

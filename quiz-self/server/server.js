@@ -25,22 +25,25 @@ app.post('/api/generate-upload-url', async (req, res) => {
   const { fileName, fileType } = req.body;
   
   try {
+    console.log('Generating upload URL for:', fileName);
+    
     const { data, error } = await supabase.storage
-      .from('quiz-self-storage') // Updated bucket name
+      .from('quiz-files')
       .createSignedUploadUrl(`${Date.now()}_${fileName}`);
 
     if (error) {
       console.error('Supabase error:', error);
-      return res.status(500).json({ error: error.message });
+      throw error;
     }
-    
+
+    console.log('Signed URL generated:', data.signedUrl);
     res.json({
       url: data.signedUrl,
       token: data.token
     });
   } catch (err) {
-    console.error('Server error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error generating upload URL:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
