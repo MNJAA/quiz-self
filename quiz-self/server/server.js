@@ -17,7 +17,7 @@ const openai = new OpenAI({
 // Initialize Supabase
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY // Use service key for bypassing RLS during development
+  process.env.SUPABASE_ANON_KEY
 );
 
 // Generate Supabase upload URL
@@ -27,6 +27,16 @@ app.post('/api/generate-upload-url', async (req, res) => {
   try {
     console.log('Generating upload URL for:', fileName);
     
+    // Ensure the bucket exists
+    const { data: bucketData, error: bucketError } = await supabase.storage
+      .getBucket('quiz-files');
+
+    if (bucketError) {
+      console.error('Bucket error:', bucketError);
+      throw bucketError;
+    }
+
+    // Generate signed URL
     const { data, error } = await supabase.storage
       .from('quiz-files')
       .createSignedUploadUrl(`${Date.now()}_${fileName}`);

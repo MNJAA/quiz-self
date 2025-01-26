@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import FileUpload from './components/FileUpload';
 import ReadyQuizzes from './components/ReadyQuizzes';
@@ -12,7 +11,6 @@ const Welcome = () => (
     <Link to="/main-menu" className="start-button">Get Started</Link>
   </div>
 );
-
 
 const MainMenu = () => (
   <div className="main-menu">

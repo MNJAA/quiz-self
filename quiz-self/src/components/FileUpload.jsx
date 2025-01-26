@@ -39,7 +39,7 @@ const FileUpload = () => {
       }
 
       const { url, token } = await res.json();
-
+      
       // Upload file to Supabase
       const uploadRes = await fetch(url, {
         method: 'PUT',
@@ -66,12 +66,12 @@ const FileUpload = () => {
         <input {...getInputProps()} />
         <p>Drag & drop file here, or click to select</p>
       </div>
-
+      
       {acceptedFiles[0] && (
         <div className="file-preview">
           <p>Selected file: {acceptedFiles[0].name}</p>
-          <button
-            onClick={handleUpload}
+          <button 
+            onClick={handleUpload} 
             disabled={uploading}
             className="upload-button"
           >
@@ -79,7 +79,7 @@ const FileUpload = () => {
           </button>
         </div>
       )}
-
+      
       {uploadError && <p className="error">{uploadError}</p>}
     </div>
   );
