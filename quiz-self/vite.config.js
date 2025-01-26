@@ -7,7 +7,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'quiz-self-6giftzniy-mjs-projects-75381399.vercel.app',
+        target: 'quizself.vercel.app',
         changeOrigin: true,
       },
     },

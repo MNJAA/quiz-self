@@ -4,4 +4,4 @@ This is a website meant to do quizzes using the filles or prompts from the user,
 
 ## Live Demo
 
-[View Live Demo](https://quiz-self-6giftzniy-mjs-projects-75381399.vercel.app)
+[View Live Demo](quizself.vercel.app)
