@@ -20,6 +20,8 @@ const FileUpload = () => {
     if (!file) return;
 
     setUploading(true);
+    setUploadError(''); // Clear previous errors
+
     try {
       // Get signed URL from backend
       const res = await fetch('/api/generate-upload-url', {
@@ -30,15 +32,26 @@ const FileUpload = () => {
           fileType: file.type
         })
       });
+
+      // Check if response is JSON
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned invalid response');
+      }
+
+      const data = await res.json();
       
-      const { url, token } = await res.json();
+      // Check for backend errors
+      if (!data.url || !data.token) {
+        throw new Error(data.error || 'Failed to generate upload URL');
+      }
       
       // Upload file to Supabase
-      const uploadRes = await fetch(url, {
+      const uploadRes = await fetch(data.url, {
         method: 'PUT',
         body: file,
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${data.token}`,
           'Content-Type': file.type
         }
       });
