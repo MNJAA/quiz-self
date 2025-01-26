@@ -7,8 +7,9 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'quizself.vercel.app',
+        target: 'https://quizself.vercel.app', // Add https://
         changeOrigin: true,
+        secure: true, // Ensure secure connection
       },
     },
   },

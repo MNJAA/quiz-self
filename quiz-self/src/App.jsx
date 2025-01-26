@@ -9,17 +9,21 @@ const Welcome = () => (
   </div>
 );
 
-const testOpenAI = async () => {
-  try {
-    const res = await fetch('/api/test-openai', {
-      method: 'POST'
-    });
-    const data = await res.json();
-    setResponse(data.question || data.error);
-  } catch (err) {
-    setResponse('Connection failed');
-  }
-};
+// APITestButton component
+const APITestButton = () => {
+  const [response, setResponse] = useState('');
+
+  const testOpenAI = async () => {
+    try {
+      const res = await fetch('/api/test-openai', {
+        method: 'POST',
+      });
+      const data = await res.json();
+      setResponse(data.question || data.error);
+    } catch (err) {
+      setResponse('Connection failed');
+    }
+  };
 
   return (
     <div className="api-test">
@@ -31,6 +35,7 @@ const testOpenAI = async () => {
   );
 };
 
+// MainMenu component
 const MainMenu = () => (
   <div className="main-menu">
     <h2>Main Menu</h2>
@@ -42,6 +47,7 @@ const MainMenu = () => (
   </div>
 );
 
+// App component
 function App() {
   return (
     <Router>
