@@ -46,10 +46,15 @@ const FileUpload = () => {
 
       // Upload file to Supabase with progress tracking
       const xhr = new XMLHttpRequest();
+
+      // Add console.log here to debug progress
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
           const percentComplete = (event.loaded / event.total) * 100;
+          console.log(`Progress: ${percentComplete}%`); // Debug log
           setUploadProgress(percentComplete); // Update progress
+        } else {
+          console.log('Progress event fired, but length is not computable.'); // Debug log
         }
       });
 
