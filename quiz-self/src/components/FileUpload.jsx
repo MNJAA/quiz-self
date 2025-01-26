@@ -43,7 +43,7 @@ const FileUpload = () => {
       }
 
       const { url, token } = await res.json();
-      
+
       // Upload file to Supabase with progress tracking
       const xhr = new XMLHttpRequest();
       xhr.upload.addEventListener('progress', (event) => {
@@ -84,35 +84,36 @@ const FileUpload = () => {
         <input {...getInputProps()} />
         <p>Drag & drop file here, or click to select</p>
       </div>
-      
+
       {acceptedFiles[0] && (
         <div className="file-preview">
           <p>Selected file: {acceptedFiles[0].name}</p>
-          <button 
-            onClick={handleUpload} 
+          <button
+            onClick={handleUpload}
             disabled={uploading}
             className="upload-button"
           >
             {uploading ? 'Uploading...' : 'Upload File'}
           </button>
 
-          {/* Progress Bar */}
           {uploading && (
-            <div className="progress-bar">
-              <div 
-                className="progress" 
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+            <div className="progress-container">
+              <div className="progress-bar">
+                <div
+                  className="progress"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+              <p className="progress-text">{Math.round(uploadProgress)}%</p>
             </div>
-          )}
-
-          {/* Success Message */}
-          {uploadedFile && (
-            <p className="success">Uploaded: {uploadedFile}</p>
           )}
         </div>
       )}
-      
+
+      {uploadedFile && (
+        <p className="success">Uploaded: {uploadedFile}</p>
+      )}
+
       {uploadError && <p className="error">{uploadError}</p>}
     </div>
   );
