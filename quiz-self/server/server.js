@@ -1,42 +1,40 @@
 import express from 'express';
 import cors from 'cors';
 import OpenAI from 'openai';
-import dotenv from 'dotenv';
 import path from 'path';
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from React frontend
+app.use(express.static(path.join(__dirname, '../dist')));
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Test endpoint for OpenAI integration
+// API Endpoint
 app.post('/api/test-openai', async (req, res) => {
   try {
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: "Create one simple math question" }],
       model: "gpt-3.5-turbo",
     });
-
-    res.json({ 
-      success: true,
-      question: completion.choices[0].message.content
-    });
+    res.json({ question: completion.choices[0].message.content });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Serve static files for the frontend
-app.use(express.static('dist'));
-
-// Catch-all route for frontend routing
+// Catch-all route to serve React app
 app.get('*', (req, res) => {
-  res.sendFile('dist/index.html', { root: '.' });
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
-// Export the app for Vercel
+// Export for Vercel
 export default app;
