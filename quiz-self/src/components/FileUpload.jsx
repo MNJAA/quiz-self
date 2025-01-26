@@ -4,8 +4,8 @@ import { useDropzone } from 'react-dropzone';
 const FileUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
-  const [uploadProgress, setUploadProgress] = useState(0); // New state for progress
-  const [uploadedFile, setUploadedFile] = useState(null); // New state for uploaded file
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   const { getRootProps, getInputProps, acceptedFiles } = useDropzone({
     accept: {
@@ -23,11 +23,10 @@ const FileUpload = () => {
 
     setUploading(true);
     setUploadError('');
-    setUploadProgress(0); // Reset progress
-    setUploadedFile(null); // Reset uploaded file
+    setUploadProgress(0);
+    setUploadedFile(null);
 
     try {
-      // Get signed URL from backend
       const res = await fetch('/api/generate-upload-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -44,13 +43,9 @@ const FileUpload = () => {
 
       const { url, token } = await res.json();
 
-      // Upload file to Supabase with progress tracking
       const xhr = new XMLHttpRequest();
-
-      // Add console.log here to debug progress
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
-          console.log(`Total: ${event.total}, Loaded: ${event.loaded}`); // Debug log
           const percentComplete = (event.loaded / event.total) * 100;
           setUploadProgress(percentComplete);
         }
@@ -63,8 +58,8 @@ const FileUpload = () => {
 
       xhr.onload = () => {
         if (xhr.status === 200) {
-          setUploadedFile(file.name); // Set uploaded file name
-          alert('File uploaded successfully!');
+          setUploadedFile(file.name);
+          setTimeout(() => setUploadedFile(null), 5000); // Auto-hide after 5 seconds
         } else {
           throw new Error('Upload failed');
         }
@@ -114,7 +109,7 @@ const FileUpload = () => {
       )}
 
       {uploadedFile && (
-        <p className="success">Uploaded: {uploadedFile}</p>
+        <p className="success">File uploaded successfully: {uploadedFile}</p>
       )}
 
       {uploadError && <p className="error">{uploadError}</p>}
