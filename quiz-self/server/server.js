@@ -20,23 +20,6 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY // Use service key for bypassing RLS during development
 );
 
-// Test OpenAI endpoint
-app.post('/api/test-openai', async (req, res) => {
-  try {
-    const completion = await openai.chat.completions.create({
-      messages: [{ role: "user", content: "Create one simple math question" }],
-      model: "gpt-3.5-turbo",
-    });
-
-    res.json({ 
-      success: true,
-      question: completion.choices[0].message.content
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // Generate Supabase upload URL
 app.post('/api/generate-upload-url', async (req, res) => {
   const { fileName, fileType } = req.body;

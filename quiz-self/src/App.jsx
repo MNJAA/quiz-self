@@ -1,47 +1,27 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import FileUpload from './components/FileUpload';
+import ReadyQuizzes from './components/ReadyQuizzes';
+import QuizInterface from './components/QuizInterface';
 
 // Temporary components
 const Welcome = () => (
   <div className="welcome">
     <h1>Welcome to QuizSelf! 🎉</h1>
+    <p>Create or take quizzes in seconds. No sign-up required.</p>
     <Link to="/main-menu" className="start-button">Get Started</Link>
   </div>
 );
 
-const APITestButton = () => {
-  const [response, setResponse] = useState('');
-
-  const testOpenAI = async () => {
-    try {
-      const res = await fetch('/api/test-openai', {
-        method: 'POST'
-      });
-      const data = await res.json();
-      setResponse(data.question || data.error);
-    } catch (err) {
-      setResponse('Connection failed');
-    }
-  };
-
-  return (
-    <div className="api-test">
-      <button onClick={testOpenAI} className="menu-btn">
-        Test OpenAI Connection
-      </button>
-      {response && <p className="response">API Response: {response}</p>}
-    </div>
-  );
-};
 
 const MainMenu = () => (
   <div className="main-menu">
     <h2>Main Menu</h2>
     <div className="menu-options">
-      <button className="menu-btn">Ready-Made Quizzes</button>
+      <Link to="/ready-quizzes" className="menu-btn">
+        Ready-Made Quizzes
+      </Link>
       <FileUpload />
-      <APITestButton />
     </div>
   </div>
 );
@@ -52,6 +32,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/main-menu" element={<MainMenu />} />
+        <Route path="/ready-quizzes" element={<ReadyQuizzes />} />
+        <Route path="/quiz" element={<QuizInterface />} />
       </Routes>
     </Router>
   );
