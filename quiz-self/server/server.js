@@ -125,11 +125,78 @@ const generateQuizQuestions = async (text) => {
 
   const completion = await openai.chat.completions.create({
     messages: [{ role: "user", content: prompt }],
-    model: "gpt-3.5-turbo",
+    model: "gpt-3.5-turbo-0125",
   });
 
   return JSON.parse(completion.choices[0].message.content);
 };
+
+// Add this function to validate quiz questions
+const validateQuizQuestions = (questions) => {
+  if (!Array.isArray(questions)) {
+    throw new Error('Quiz questions must be an array');
+  }
+
+  const validatedQuestions = questions.filter((question) => {
+    // Check if the question has a valid question text
+    if (!question.question || typeof question.question !== 'string') {
+      return false;
+    }
+
+    // Check if the question has at least 2 options
+    if (!Array.isArray(question.options) || question.options.length < 2) {
+      return false;
+    }
+
+    // Check if the correctAnswer is valid and matches one of the options
+    if (
+      !question.correctAnswer ||
+      typeof question.correctAnswer !== 'string' ||
+      !question.options.includes(question.correctAnswer)
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  return validatedQuestions;
+};
+
+// Update the /api/process-file endpoint to include validation
+app.post('/api/process-file', async (req, res) => {
+  const { fileUrl, fileType } = req.body;
+
+  try {
+    // Step 1: Extract text from the file
+    let extractedText;
+    if (fileType === 'application/pdf') {
+      extractedText = await extractTextFromPDF(fileUrl);
+    } else if (fileType.startsWith('image/')) {
+      extractedText = await extractTextFromImage(fileUrl);
+    } else if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      extractedText = await extractTextFromDOCX(fileUrl);
+    } else if (fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      extractedText = await extractTextFromXLSX(fileUrl);
+    } else {
+      throw new Error('Unsupported file type');
+    }
+
+    // Step 2: Use OpenAI to generate quiz questions
+    const quizQuestions = await generateQuizQuestions(extractedText);
+
+    // Step 3: Validate the quiz questions
+    const validatedQuestions = validateQuizQuestions(quizQuestions);
+
+    if (validatedQuestions.length === 0) {
+      throw new Error('No valid questions were generated');
+    }
+
+    res.json({ success: true, questions: validatedQuestions });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Start server
 const PORT = 3001;
