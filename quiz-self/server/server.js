@@ -41,6 +41,74 @@ app.post('/api/generate-upload-url', async (req, res) => {
   }
 });
 
+// File processing endpoint
+app.post('/api/process-file', async (req, res) => {
+  const { fileUrl, fileType } = req.body;
+
+  try {
+    // Step 1: Extract text from the file
+    let extractedText;
+    if (fileType === 'application/pdf') {
+      extractedText = await extractTextFromPDF(fileUrl);
+    } else if (fileType.startsWith('image/')) {
+      extractedText = await extractTextFromImage(fileUrl);
+    } else if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      extractedText = await extractTextFromDOCX(fileUrl);
+    } else if (fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      extractedText = await extractTextFromXLSX(fileUrl);
+    } else {
+      throw new Error('Unsupported file type');
+    }
+
+    // Step 2: Use OpenAI to generate quiz questions
+    const quizQuestions = await generateQuizQuestions(extractedText);
+
+    res.json({ success: true, questions: quizQuestions });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Helper function to extract text from PDF
+const extractTextFromPDF = async (fileUrl) => {
+  // Use a library like pdf-parse or pdf-lib
+  // Example: https://www.npmjs.com/package/pdf-parse
+  return "Extracted text from PDF";
+};
+
+// Helper function to extract text from images (OCR)
+const extractTextFromImage = async (fileUrl) => {
+  // Use Tesseract.js for OCR
+  // Example: https://github.com/naptha/tesseract.js
+  return "Extracted text from image";
+};
+
+// Helper function to extract text from DOCX
+const extractTextFromDOCX = async (fileUrl) => {
+  // Use a library like mammoth
+  // Example: https://www.npmjs.com/package/mammoth
+  return "Extracted text from DOCX";
+};
+
+// Helper function to extract text from XLSX
+const extractTextFromXLSX = async (fileUrl) => {
+  // Use a library like xlsx
+  // Example: https://www.npmjs.com/package/xlsx
+  return "Extracted text from XLSX";
+};
+
+// Helper function to generate quiz questions using OpenAI
+const generateQuizQuestions = async (text) => {
+  const prompt = `Generate 5 quiz questions based on the following text:\n\n${text}\n\nFormat the questions as a JSON array: [{ "question": "...", "options": ["...", "..."], "correctAnswer": "..." }]`;
+
+  const completion = await openai.chat.completions.create({
+    messages: [{ role: "user", content: prompt }],
+    model: "gpt-3.5-turbo",
+  });
+
+  return JSON.parse(completion.choices[0].message.content);
+};
+
 // Start server
 const PORT = 3001;
 app.listen(PORT, () => {

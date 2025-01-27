@@ -27,6 +27,7 @@ const FileUpload = () => {
     setUploadedFile(null);
 
     try {
+      // Step 1: Upload file to Supabase
       const res = await fetch('/api/generate-upload-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -42,7 +43,6 @@ const FileUpload = () => {
       }
 
       const { url, token } = await res.json();
-
       const xhr = new XMLHttpRequest();
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
@@ -51,15 +51,28 @@ const FileUpload = () => {
         }
       });
 
+
       xhr.open('PUT', url, true);
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       xhr.setRequestHeader('Content-Type', file.type);
       xhr.send(file);
 
-      xhr.onload = () => {
+      xhr.onload = async () => {
         if (xhr.status === 200) {
           setUploadedFile(file.name);
-          setTimeout(() => setUploadedFile(null), 5000); // Auto-hide after 5 seconds
+  
+          // Step 2: Process the file to generate quiz questions
+          const processRes = await fetch('/api/process-file', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileUrl: url.split('?')[0], // Remove query params
+              fileType: file.type
+            })
+          });
+  
+          const { questions } = await processRes.json();
+          alert(`Quiz questions generated: ${JSON.stringify(questions)}`);
         } else {
           throw new Error('Upload failed');
         }
