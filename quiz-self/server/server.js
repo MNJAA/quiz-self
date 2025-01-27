@@ -3,6 +3,7 @@ import cors from 'cors';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import ExcelJS from 'exceljs';
+import Tesseract from 'tesseract.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -127,7 +128,12 @@ const extractTextFromPDF = async (fileUrl) => {
 
 // Helper function to extract text from images (OCR)
 const extractTextFromImage = async (fileUrl) => {
-  return "Extracted text from image";
+  try {
+    const { data: { text } } = await Tesseract.recognize(fileUrl, 'eng');
+    return text;
+  } catch (err) {
+    throw new Error(`Failed to extract text from image: ${err.message}`);
+  }
 };
 
 // Helper function to extract text from DOCX
