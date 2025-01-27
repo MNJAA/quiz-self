@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
+import ExcelJS from 'exceljs';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -92,9 +93,30 @@ const extractTextFromDOCX = async (fileUrl) => {
 
 // Helper function to extract text from XLSX
 const extractTextFromXLSX = async (fileUrl) => {
-  // Use a library like xlsx
-  // Example: https://www.npmjs.com/package/xlsx
-  return "Extracted text from XLSX";
+  try {
+    // Fetch the file
+    const response = await fetch(fileUrl);
+    const buffer = await response.arrayBuffer();
+
+    // Load the workbook
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(buffer);
+
+    let extractedText = '';
+
+    // Iterate through each worksheet
+    workbook.eachSheet((worksheet) => {
+      worksheet.eachRow((row) => {
+        // Extract cell values and join them with commas
+        const rowText = row.values.slice(1).join(', ');
+        extractedText += rowText + '\n';
+      });
+    });
+
+    return extractedText.trim(); // Remove trailing newline
+  } catch (error) {
+    throw new Error(`Failed to extract text from XLSX: ${error.message}`);
+  }
 };
 
 // Helper function to generate quiz questions using OpenAI
