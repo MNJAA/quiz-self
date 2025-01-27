@@ -51,7 +51,6 @@ const FileUpload = () => {
         }
       });
 
-
       xhr.open('PUT', url, true);
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       xhr.setRequestHeader('Content-Type', file.type);
@@ -60,17 +59,22 @@ const FileUpload = () => {
       xhr.onload = async () => {
         if (xhr.status === 200) {
           setUploadedFile(file.name);
-  
+
           // Step 2: Process the file to generate quiz questions
           const processRes = await fetch('/api/process-file', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              fileUrl: url.split('?')[0], // Remove query params
+              fileUrl: url.split('?')[0],
               fileType: file.type
             })
           });
-  
+
+          if (!processRes.ok) {
+            const errorData = await processRes.json();
+            throw new Error(errorData.error || 'Failed to process file');
+          }
+
           const { questions } = await processRes.json();
           alert(`Quiz questions generated: ${JSON.stringify(questions)}`);
         } else {
