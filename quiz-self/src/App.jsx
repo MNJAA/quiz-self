@@ -27,13 +27,6 @@ const MainMenu = () => (
 function App() {
   return (
     <Router>
-      future={{
-        v7_startTransition: true, // Opt into the future behavior
-      }};
-      future={{
-        v7_relativeSplatPath: true, // Opt into the future behavior
-      }}
-    
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/main-menu" element={<MainMenu />} />
