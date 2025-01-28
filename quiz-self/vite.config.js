@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 export default defineConfig({
   base: '/',
@@ -12,12 +13,20 @@ export default defineConfig({
           ? 'http://localhost:3001'
           : 'https://quizself.vercel.app',
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
     },
   },
   build: {
     outDir: 'dist',
     assetsInlineLimit: 0,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
 });

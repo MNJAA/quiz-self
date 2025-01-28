@@ -23,9 +23,13 @@
       "src": "/assets/(.*)",
       "dest": "/dist/assets/$1"
     },
-    { 
+    {
       "src": "/(.*)",
       "dest": "/dist/$1"
+    },
+    {
+      "src": "/node_modules/tesseract.js-core/(.*)",
+      "dest": "/dist/node_modules/tesseract.js-core/$1"
     }
   ]
 }

@@ -39,6 +39,7 @@ app.post('/api/generate-upload-url', async (req, res) => {
       contentLength: req.headers['content-length']
     });
   } catch (err) {
+    console.error('Error generating upload URL:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -92,6 +93,7 @@ app.post('/api/process-file', async (req, res) => {
         throw new Error('Unsupported file type');
       }
     } catch (err) {
+      console.error('Error extracting text:', err);
       throw new Error(`Failed to extract text from file: ${err.message}`);
     }
 
@@ -100,6 +102,7 @@ app.post('/api/process-file', async (req, res) => {
     try {
       quizQuestions = await generateQuizQuestions(extractedText);
     } catch (err) {
+      console.error('Error generating quiz questions:', err);
       throw new Error(`Failed to generate quiz questions: ${err.message}`);
     }
 
@@ -108,6 +111,7 @@ app.post('/api/process-file', async (req, res) => {
     try {
       validatedQuestions = validateQuizQuestions(quizQuestions);
     } catch (err) {
+      console.error('Error validating quiz questions:', err);
       throw new Error(`Failed to validate quiz questions: ${err.message}`);
     }
 
@@ -117,6 +121,7 @@ app.post('/api/process-file', async (req, res) => {
 
     res.json({ success: true, questions: validatedQuestions });
   } catch (error) {
+    console.error('Error processing file:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -132,6 +137,7 @@ const extractTextFromImage = async (fileUrl) => {
     const { data: { text } } = await Tesseract.recognize(fileUrl, 'eng');
     return text;
   } catch (err) {
+    console.error('Error extracting text from image:', err);
     throw new Error(`Failed to extract text from image: ${err.message}`);
   }
 };
@@ -161,6 +167,7 @@ const extractTextFromXLSX = async (fileUrl) => {
 
     return extractedText.trim();
   } catch (error) {
+    console.error('Error extracting text from XLSX:', error);
     throw new Error(`Failed to extract text from XLSX: ${error.message}`);
   }
 };
