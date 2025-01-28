@@ -9,10 +9,10 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: process.env.NODE_ENV === 'development' 
-          ? 'http://localhost:3001' 
+          ? 'http://localhost:3001'
           : 'https://quizself.vercel.app',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
   },

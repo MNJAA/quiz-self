@@ -65,7 +65,7 @@ const FileUpload = () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              fileUrl: url.split('?')[0],
+              fileUrl: url.split('?')[0], // Remove query params
               fileType: file.type
             })
           });
