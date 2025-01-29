@@ -1,3 +1,7 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+// Explicit default export for Vite compatibility
 export default defineConfig({
   base: '/',
   plugins: [react()],
@@ -9,13 +13,12 @@ export default defineConfig({
           ? 'http://localhost:3001'
           : 'https://quizself.vercel.app',
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        secure: false
       }
     }
   },
   build: {
     outDir: 'dist',
-    assetsInlineLimit: 0,
+    assetsInlineLimit: 0
   }
 });
