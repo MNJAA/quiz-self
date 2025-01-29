@@ -55,30 +55,32 @@ const FileUpload = () => {
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       xhr.setRequestHeader('Content-Type', file.type);
       xhr.send(file);
-
+      
+      // Update the error handling in handleUpload
       xhr.onload = async () => {
         if (xhr.status === 200) {
-          setUploadedFile(file.name);
+          try {
+            const processRes = await fetch('/api/process-file', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fileUrl: url.split('?')[0],
+                fileType: file.type
+              })
+            });
 
-          // Step 2: Process the file to generate quiz questions
-          const processRes = await fetch('/api/process-file', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              fileUrl: url.split('?')[0], // Remove query params
-              fileType: file.type
-            })
-          });
+            const response = await processRes.json();
+            if (!processRes.ok) {
+              throw new Error(response.message || 'Failed to process file');
+            }
 
-          if (!processRes.ok) {
-            const errorData = await processRes.json();
-            throw new Error(errorData.error || 'Failed to process file');
+            setUploadedFile(file.name);
+            alert(`Quiz questions generated: ${JSON.stringify(response.questions)}`);
+          } catch (err) {
+            setUploadError(err.message);
           }
-
-          const { questions } = await processRes.json();
-          alert(`Quiz questions generated: ${JSON.stringify(questions)}`);
         } else {
-          throw new Error('Upload failed');
+          setUploadError('File upload failed');
         }
       };
 

@@ -1,7 +1,3 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
-
 export default defineConfig({
   base: '/',
   plugins: [react()],
@@ -14,19 +10,12 @@ export default defineConfig({
           : 'https://quizself.vercel.app',
         changeOrigin: true,
         secure: false,
-      },
-    },
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
   build: {
     outDir: 'dist',
     assetsInlineLimit: 0,
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-      },
-      output: {
-        manualChunks: undefined,
-      },
-    },
-  },
+  }
 });

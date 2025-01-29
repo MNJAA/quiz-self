@@ -3,7 +3,9 @@ import cors from 'cors';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
 import ExcelJS from 'exceljs';
-import Tesseract from 'tesseract.js';
+import { createWorker } from 'tesseract.js';
+import pdf from 'pdf-parse';
+import mammoth from 'mammoth';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -128,23 +130,40 @@ app.post('/api/process-file', async (req, res) => {
 
 // Helper function to extract text from PDF
 const extractTextFromPDF = async (fileUrl) => {
-  return "Extracted text from PDF";
+  try {
+    const response = await fetch(fileUrl);
+    const buffer = await response.arrayBuffer();
+    const data = await pdf(Buffer.from(buffer));
+    return data.text;
+  } catch (err) {
+    throw new Error(`Failed to extract PDF text: ${err.message}`);
+  }
 };
 
 // Helper function to extract text from images (OCR)
 const extractTextFromImage = async (fileUrl) => {
   try {
-    const { data: { text } } = await Tesseract.recognize(fileUrl, 'eng');
+    const worker = await createWorker();
+    await worker.loadLanguage('eng');
+    await worker.initialize('eng');
+    const { data: { text } } = await worker.recognize(fileUrl);
+    await worker.terminate();
     return text;
   } catch (err) {
-    console.error('Error extracting text from image:', err);
     throw new Error(`Failed to extract text from image: ${err.message}`);
   }
 };
 
 // Helper function to extract text from DOCX
 const extractTextFromDOCX = async (fileUrl) => {
-  return "Extracted text from DOCX";
+  try {
+    const response = await fetch(fileUrl);
+    const buffer = await response.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+    return result.value;
+  } catch (err) {
+    throw new Error(`Failed to extract DOCX text: ${err.message}`);
+  }
 };
 
 // Helper function to extract text from XLSX
@@ -183,6 +202,21 @@ const generateQuizQuestions = async (text) => {
 
   return JSON.parse(completion.choices[0].message.content);
 };
+
+// Add error middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Internal Server Error',
+    message: err.message 
+  });
+});
+
+// Update all error responses to use JSON
+res.status(500).json({ 
+  error: 'Internal Server Error',
+  message: error.message 
+});
 
 // Start server
 const PORT = 3001;

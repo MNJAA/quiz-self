@@ -10,7 +10,17 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "cleanUrls": true
+        "cleanUrls": true,
+        "includeFiles": [
+          "node_modules/tesseract.js-core/**"
+        ]
+      }
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
       }
     }
   ],
@@ -26,10 +36,7 @@
     {
       "src": "/(.*)",
       "dest": "/dist/$1"
-    },
-    {
-      "src": "/node_modules/tesseract.js-core/(.*)",
-      "dest": "/dist/node_modules/tesseract.js-core/$1"
     }
+    
   ]
 }
