@@ -55,7 +55,7 @@ const FileUpload = () => {
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
       xhr.setRequestHeader('Content-Type', file.type);
       xhr.send(file);
-      
+
       // Update the error handling in handleUpload
       xhr.onload = async () => {
         if (xhr.status === 200) {
@@ -67,7 +67,7 @@ const FileUpload = () => {
                 fileUrl: url.split('?')[0],
                 fileType: file.type
               })
-            });
+            }); 
 
             const response = await processRes.json();
             if (!processRes.ok) {
